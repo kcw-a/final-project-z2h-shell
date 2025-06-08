@@ -4,7 +4,12 @@ OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
 socket: clean
 	gcc -o bin/socket socket/socket.c
-	./bin/socket
+
+strace-socket:
+	strace ./bin/socket
+
+test-socket:
+	nc localhost 5555
 
 run: clean default
 	./$(TARGET) -f ./mynewdb.db -n
