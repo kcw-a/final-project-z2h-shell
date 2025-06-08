@@ -10,7 +10,7 @@ int main() {
 
   server_info.sin_family = AF_INET;
   // any address coming from local computer, e.g. localhost
-  server_info.sin_addr.s_addr = 0;
+  server_info.sin_addr.s_addr = INADDR_ANY;
   server_info.sin_port = htons(5555);
 
   int fd = socket(AF_INET, SOCK_STREAM, 0);
