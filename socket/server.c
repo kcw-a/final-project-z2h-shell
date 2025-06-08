@@ -3,6 +3,29 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+typedef enum {
+  PROTO_HELLO,
+} proto_type_e;
+
+typedef struct {
+  proto_type_e type;
+  unsigned short len;
+} proto_hdr_t;
+
+void handle_client(int cfd) {
+  char buf[4096] = {0};
+  proto_hdr_t *hdr = (proto_hdr_t *)buf;
+  hdr->type = htonl(PROTO_HELLO);
+  hdr->len = sizeof(int);
+  int real_len = hdr->len;
+  hdr->len = htons(hdr->len);
+
+  int *data = (int *)&hdr[1];
+  *data = htonl(1);
+
+  write(cfd, hdr, sizeof(proto_hdr_t) + real_len);
+}
+
 int main() {
   struct sockaddr_in server_info = {0};
   struct sockaddr_in client_info = {0};
@@ -31,14 +54,17 @@ int main() {
     return -1;
   }
 
-  int cfd = accept(fd, (struct sockaddr *)&client_info, &client_size);
-  if (cfd == -1) {
-    perror("accept");
-    close(fd);
-    return -1;
-  }
+  while (1) {
+    int cfd = accept(fd, (struct sockaddr *)&client_info, &client_size);
+    if (cfd == -1) {
+      perror("accept");
+      close(fd);
+      return -1;
+    }
 
-  close(cfd);
+    handle_client(cfd);
+    close(cfd);
+  }
 
   printf("Socket created with fd: %d\n", fd);
   return 0;
