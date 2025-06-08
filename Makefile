@@ -3,10 +3,11 @@ SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
 socket: clean
-	gcc -o bin/socket socket/socket.c
+	gcc -o bin/server socket/server.c
+	gcc -o bin/client socket/client.c
 
 strace-socket:
-	strace ./bin/socket
+	strace ./bin/server
 
 test-socket:
 	nc localhost 5555
